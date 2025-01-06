@@ -10,11 +10,11 @@ def main():
         "password": "",
         "birth": "",
         "courses": {
-            "INF2610": { "T": 1, "L": 1 },
-            "INF3405": { "T": 1, "L": 2 },
-            "LOG2990": { "T": 1, "L": 2 },
-            "MTH2304": { "T": 4, "L": 4 },
-            "SSH3501": { "T": 8 }
+            "INF2610": { "T": [2], "L": [3] },
+            "INF3405": { "T": [3], "L": [1] },
+            "LOG2990": { "T": [1], "L": [2] },
+            "MTH2304": { "T": [2], "L": [2] },
+            "SSH3501": { "T": [2, 3, 10] }
         }
     }
     
@@ -56,13 +56,15 @@ def get_possible_modifications(current_courses, wanted_courses):
     modifications = []
     for key, value in wanted_courses.items():
         for type in ["T", "L"]:
-            wanted_group = value.get(type, 0)
-            if wanted_group != 0:
+            wanted_groups = value.get(type, [])
+            if len(wanted_groups) > 0:
                 current_group = current_courses[key][f"C{type}"]
-                if wanted_group != current_group:
-                    is_change_possible = current_courses[key][type][wanted_group]
-                    if is_change_possible:
-                        modifications.append({"sigle": key, "type": type, "group": wanted_group})
+                if current_group not in wanted_groups:
+                    for wanted_group in wanted_groups:
+                        is_change_possible = current_courses[key][type][wanted_group]
+                        if is_change_possible:
+                            modifications.append({"sigle": key, "type": type, "group": wanted_group})
+                            break
     return modifications
 
 
